@@ -16,6 +16,9 @@ import java.lang.reflect.Array
  */
 
 packageName = "App\\Mapper;"
+
+classSuffix = "Mapper"
+
 typeMapping = [
         (~/(?i)int/)                      : "int",
         (~/(?i)float|double|decimal|real/): "float",
@@ -31,7 +34,7 @@ FILES.chooseDirectoryAndSave("Choose directory", "Choose where to store generate
 def generate(table, dir) {
     def className = javaName(table.getName(), true)
     def fields = calcFields(table)
-    new File(dir, className + "Mapper.php").withPrintWriter { out -> generate(out, table.getName(), className, fields) }
+    new File(dir, className + "${classSuffix}.php").withPrintWriter { out -> generate(out, table.getName(), className, fields) }
 }
 
 def generate(out, table, className, fields) {
@@ -46,14 +49,14 @@ def generate(out, table, className, fields) {
     out.println "use \\iyoule\\Database\\Eloquent\\Mapper;"
     out.println ""
     out.println "/**"
-    out.println " * class ${className}Mapper"
+    out.println " * class ${className}${classSuffix}"
     fields.each() {
         out.println " * @property ${it.type} \$${it.col} ${it.cmt}"
     }
     out.println " * @package ${packageName}"
     out.println " * @mixin \\Eloquent"
     out.println " */"
-    out.println "class ${className}Mapper extends Mapper {"
+    out.println "class ${className}${classSuffix} extends Mapper {"
     out.println ""
     out.println "    protected \$table=\"$table\";"
     def i = 0;
@@ -145,8 +148,8 @@ def generate(out, table, className, fields) {
                 out.println("    const ${constname}_ON = \"0\";")
             } else {
                 for (int j = 0; j < enumValues.size(); j++) {
-                    String tmp = enumValues.get(j).toUpperCase()
-                    String nametmp = constname + "_" + tmp
+                    String tmp = enumValues.get(j)
+                    String nametmp = constname + "_" + tmp.toUpperCase()
                     out.println("    const ${nametmp} = \"${tmp}\";")
                 }
             }
