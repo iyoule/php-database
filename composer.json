@@ -1,0 +1,33 @@
+{
+  "name": "iyoule/php-database",
+  "require": {
+    "illuminate/database": "^5.5",
+    "iyoule/php-biz": "1.0.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "iyoule\\Database\\": "src"
+    }
+  },
+  "repositories": {
+    "0": {
+      "type": "vcs",
+      "url": "https://github.com/iyoule/php-biz.git",
+      "name": "iyoule/php-biz"
+    },
+    "1": {
+      "name": "iyoule/php-convert",
+      "type": "vcs",
+      "url": "https://github.com/iyoule/php-convert.git"
+    },
+    "2": {
+      "name": "iyoule/php-reflection",
+      "type": "vcs",
+      "url": "https://github.com/iyoule/php-reflection.git"
+    },
+    "packagist": {
+      "type": "composer",
+      "url": "https://mirrors.aliyun.com/composer/"
+    }
+  }
+}
