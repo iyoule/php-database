@@ -107,14 +107,14 @@ def generate(out, table, className, fields) {
     out.println ""
 
     if (updatedList.size() == 0) {
-        out.println "    const UPDATED_AT = false;"
+        out.println "    const UPDATED_AT = null;"
         out.println ""
     } else {
         out.println "    const UPDATED_AT = '${updatedList.get(0)}';"
         out.println ""
     }
     if (createdList.size() == 0) {
-        out.println "    const CREATED_AT = false;"
+        out.println "    const CREATED_AT = null;"
         out.println ""
     } else {
         out.println "    const CREATED_AT = '${updatedList.get(0)}';"
