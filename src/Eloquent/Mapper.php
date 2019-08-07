@@ -20,15 +20,21 @@ abstract class Mapper extends Model
 
 
     /**
+     * @var Mapper
+     */
+    protected $masterMapper = null;
+
+
+    /**
      * @param $biz
      * @return array
      */
     private function biz2Array($biz)
     {
         if ($biz instanceof Biz) {
-            try{
+            try {
                 return $biz->serialize2db();
-            }catch (\ReflectionException $e){
+            } catch (\ReflectionException $e) {
                 return [];
             }
         }
@@ -51,12 +57,21 @@ abstract class Mapper extends Model
     }
 
 
+    /**
+     * @param string $method
+     * @param array $parameters
+     * @return mixed
+     */
     public function __call($method, $parameters)
     {
         $args = [];
         foreach ($parameters as $parameter) {
             if ($parameter instanceof Biz) {
-                $args[] = $parameter->serialize2db();
+                try {
+                    $args[] = $parameter->serialize2db();
+                } catch (\ReflectionException $e) {
+                    $args[] = $parameter;
+                }
             } else {
                 $args[] = $parameter;
             }
@@ -78,6 +93,36 @@ abstract class Mapper extends Model
             return call_user_func([$class, 'unSerialize'], $this->toArray());
         } catch (\ReflectionException $e) {
             throw new InvalidArgumentException("classname must be iyoule\\BizSpace\\Biz of class");
+        }
+    }
+
+
+    /**
+     * @return Mapper
+     */
+    public function master()
+    {
+        if (empty($this->masterMapper)){
+            throw new InvalidArgumentException("masterMapper must be require");
+        }
+        return $this->masterMapper;
+    }
+
+
+    /**
+     * @param $class
+     * @return Mapper
+     */
+    public function getMapper($class)
+    {
+        try {
+            if (!class_exists($class) || ($mapper = new $class) instanceof self) {
+                throw new \Exception(sprintf("classname must be %s of class", self::class));
+            }
+            $mapper->masterMapper = $this;
+            return $mapper;
+        } catch (\Throwable $e) {
+            throw new InvalidArgumentException(sprintf("classname must be %s of class", self::class));
         }
     }
 
