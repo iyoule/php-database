@@ -113,10 +113,10 @@ abstract class Mapper extends Model
      * @param $class
      * @return Mapper
      */
-    public function getMapper($class)
+    public function newSlaveMapper($class)
     {
         try {
-            if (!class_exists($class) || ($mapper = new $class) instanceof self) {
+            if (!class_exists($class) || !(($mapper = new $class) instanceof self)) {
                 throw new \Exception(sprintf("classname must be %s of class", self::class));
             }
             $mapper->masterMapper = $this;
