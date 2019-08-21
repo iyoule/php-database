@@ -68,6 +68,7 @@ def generate(out, table, className, fields) {
     ArrayList<String> createdList = new ArrayList<>()
 
     boolean isIncr = true;
+    boolean incrType = "int";
 
     fields.each() {
         column = it.source
@@ -78,6 +79,7 @@ def generate(out, table, className, fields) {
             primaryKey.add(it.col)
             guarded.add(col)
             isIncr = attributes.contains(DasColumn.Attribute.AUTO_GENERATED)
+            incrType = it.type
         } else {
             fillable.add(col)
         }
@@ -90,13 +92,28 @@ def generate(out, table, className, fields) {
 
     }
 
-    if (isIncr == false) {
+    if (false == isIncr) {
         out.println ""
         out.println "    public \$incrementing = false;"
+
+        if (!"int".equals(incrType)) {
+            out.println ""
+            out.println "    protected \$keyType = 'string';"
+        }
+
+        for (int ni = 0; ni < primaryKey.size(); ni++) {
+            for (int j = 0; j < guarded.size(); j++) {
+                if (guarded.get(j).equals("'"+primaryKey.get(ni)+"'")) {
+                    fillable.add(guarded.get(j))
+                    guarded.remove(j)
+                }
+            }
+        }
+
     }
 
-    out.println ""
     for (int j = 0; j < primaryKey.size(); j++) {
+        out.println ""
         out.println "    protected \$primaryKey = '${primaryKey.get(j)}'; "
     }
 
@@ -106,19 +123,25 @@ def generate(out, table, className, fields) {
     out.println "    protected \$guarded = ${guarded}; "
     out.println ""
 
-    if (updatedList.size() == 0) {
-        out.println "    const UPDATED_AT = null;"
+
+    if (updatedList.size() == 0 && createdList.size() == 0) {
+        out.println "    public \$timestamps = false;"
         out.println ""
     } else {
-        out.println "    const UPDATED_AT = '${updatedList.get(0)}';"
-        out.println ""
-    }
-    if (createdList.size() == 0) {
-        out.println "    const CREATED_AT = null;"
-        out.println ""
-    } else {
-        out.println "    const CREATED_AT = '${updatedList.get(0)}';"
-        out.println ""
+        if (updatedList.size() == 0) {
+            out.println "    const UPDATED_AT = null;"
+            out.println ""
+        } else {
+            out.println "    const UPDATED_AT = '${updatedList.get(0)}';"
+            out.println ""
+        }
+        if (createdList.size() == 0) {
+            out.println "    const CREATED_AT = null;"
+            out.println ""
+        } else {
+            out.println "    const CREATED_AT = '${updatedList.get(0)}';"
+            out.println ""
+        }
     }
 
 
